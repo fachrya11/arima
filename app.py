@@ -4,22 +4,20 @@ import numpy as np
 import pickle
 from datetime import datetime, timedelta
 
-
 # Load the trained ARIMA model
 with open('model/arima_model.pkl', 'rb') as file:
     model_ARIMA = pickle.load(file)
 
-@app.route('/')
-def index():
-    return render_template('index.html')
+# Streamlit app
+st.title("Stock Price Prediction")
+st.write("This application uses an ARIMA model to predict stock prices.")
 
-@app.route('/predict', methods=['POST'])
-def predict():
+# Date input
+start_date = st.date_input("Start Date", datetime.today() - timedelta(days=7))
+end_date = st.date_input("End Date", datetime.today())
+
+if st.button('Predict'):
     try:
-        data = request.get_json(force=True)
-        start_date = datetime.strptime(data['start_date'], '%Y-%m-%d')
-        end_date = datetime.strptime(data['end_date'], '%Y-%m-%d')
-        
         # Generate date range for prediction
         date_range = pd.date_range(start=start_date, end=end_date, freq='D')
 
@@ -30,8 +28,12 @@ def predict():
         predictions = last_value + predictions_diff_cumsum
 
         # Prepare the results
-        results = {'date': date_range.strftime('%Y-%m-%d').tolist(), 'predictions': predictions.tolist()}
-        return jsonify(results)
-    except Exception as e:
-        return jsonify({'error': str(e)})
+        results = pd.DataFrame({'Date': date_range, 'Predicted Price': predictions})
+        
+        # Display results
+        st.write(results)
 
+        # Plot the results
+        st.line_chart(results.set_index('Date'))
+    except Exception as e:
+        st.error(f"Error: {str(e)}")
