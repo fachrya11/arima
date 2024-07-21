@@ -3,6 +3,7 @@ import pandas as pd
 import numpy as np
 import pickle
 from datetime import datetime, timedelta
+from statsmodels.tsa.arima.model import ARIMA
 
 
 # Load the trained ARIMA model
