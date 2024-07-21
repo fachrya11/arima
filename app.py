@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 
 
 # Load the trained ARIMA model
-with open('model/arima_model.pkl', 'rb')file:
+with open('model/arima_model.pkl', 'rb') as file:
     model_ARIMA = pickle.load(file)
 
 @app.route('/')
